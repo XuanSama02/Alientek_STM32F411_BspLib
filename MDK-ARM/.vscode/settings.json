@@ -1,0 +1,18 @@
+{
+    "files.associations": {
+        "bsp_f411_led.h": "c",
+        "bsp_f411_beep.h": "c",
+        "main.h": "c",
+        "bsp_f411_w25q16.h": "c",
+        "bsp_w25qxx.h": "c",
+        "bsp_at24c02.h": "c",
+        "bsp_f411_usart.h": "c",
+        "bsp_at24cxx.h": "c",
+        "usart.h": "c",
+        "task.h": "c",
+        "freertos.h": "c",
+        "bsp_i2c.h": "c",
+        "bsp_delay_tim.h": "c",
+        "cstdlib": "c"
+    }
+}
