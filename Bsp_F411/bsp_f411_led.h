@@ -26,8 +26,6 @@ SCLK -> PB5
 
 //使用RTC功能
 #define RTC_ENABLE
-//使用FreeRTOS功能
-#define FreeRTOS
 
 //74HC138芯片引脚(共阴极数码管段选端，低电平有效，默认上拉)
 #define HC138_A0_PORT HC138_A0_GPIO_Port
