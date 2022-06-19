@@ -6,8 +6,11 @@
  */
 void F411_Test(void)
 {
+    printf("\r\n");
+    printf("F411 Test Starting:\r\n");
     F411_Test_W25Q16();
     F411_Test_AT24C02();
+    F411_Test_TPAD();  //注意此测试为无限循环
 }
 
 /**
@@ -59,4 +62,25 @@ void F411_Test_AT24C02(void)
     printf("%s\r\n", Read);
     printf("\r\n");
     osDelay(2000);
+}
+
+/**
+ * @brief 测试板载TouchPad(无限循环)
+ * 
+ */
+void F411_Test_TPAD(void)
+{
+    F411_TPAD_Init(6);
+    printf("F411_TEST: TouchPad\r\n");
+    osDelay(1000);
+    printf("TouchPad started Mode0 for Infinity\r\n");
+    while(1)
+    {
+        if(F411_TPAD_Scan(0))
+        {
+            printf("Touched!\r\n");
+            HAL_GPIO_TogglePin(LED_00_GPIO_Port, LED_00_Pin);
+        } 
+        osDelay(1);
+    }
 }
