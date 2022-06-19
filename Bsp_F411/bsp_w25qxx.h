@@ -76,10 +76,10 @@ uint8_t W25QXX_ReadSR(uint8_t Regno);  //读取状态寄存器
 void W25QXX_Write_SR(uint8_t Regno, uint8_t Sr);  //写状态寄存器
 void W25QXX_Write_Enable(void);  //写使能 
 void W25QXX_Write_Disable(void);  //写保护
-void W25QXX_Write_NoCheck(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);  //无校验写入
-void W25QXX_Write(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);  //写入flash
-void W25QXX_Write_Page(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);  //写入flash(页)
-void W25QXX_Read(uint8_t* pBuffer, uint32_t ReadAddr, uint16_t NumByteToRead);  //读取flash
+void W25QXX_Write_NoCheck(uint32_t WriteAddr, uint8_t* pBuffer, uint16_t NumByteToWrite);  //无校验写入
+void W25QXX_Write(uint32_t WriteAddr, uint8_t* pBuffer, uint16_t NumByteToWrite);  //写入flash
+void W25QXX_Write_Page(uint32_t WriteAddr, uint8_t* pBuffer, uint16_t NumByteToWrite);  //写入flash(页)
+void W25QXX_Read(uint32_t ReadAddr, uint8_t* pBuffer, uint16_t NumByteToRead);  //读取flash
 
 void W25QXX_Erase_Chip(void);  //整片擦除
 void W25QXX_Erase_Sector(uint32_t Dst_Addr);  //扇区擦除

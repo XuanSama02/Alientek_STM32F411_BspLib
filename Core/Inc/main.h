@@ -31,13 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "bsp_rtc.h"
-#include "bsp_delay_tim.h"
-#include "bsp_f411_usart.h"
-#include "bsp_f411_beep.h"
-#include "bsp_f411_led.h"
-#include "bsp_w25qxx.h"
-#include "bsp_at24cxx.h"
+#include "bsp_f411.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

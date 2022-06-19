@@ -433,6 +433,11 @@
               <FileType>1</FileType>
               <FilePath>..\Bsp_F411\bsp_delay_tim.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_f411.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp_F411\bsp_f411.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

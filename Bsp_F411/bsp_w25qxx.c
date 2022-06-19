@@ -154,11 +154,11 @@ void W25QXX_Write_Disable(void)
 /**
  * @brief 无校验写入W25QXX
  * 
- * @param pBuffer 数据存储区
  * @param WriteAddr 写入起始地址(24bit)
+ * @param pBuffer 数据存储区
  * @param NumByteToWrite 写入字节数(Max=65535)
  */
-void W25QXX_Write_NoCheck(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
+void W25QXX_Write_NoCheck(uint32_t WriteAddr, uint8_t* pBuffer, uint16_t NumByteToWrite)
 {
     uint16_t PageRemain = 0;
     PageRemain = 256 - WriteAddr%256;  //单页剩余的字节
@@ -166,7 +166,7 @@ void W25QXX_Write_NoCheck(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByte
         PageRemain = NumByteToWrite;
     while(1)
     {
-        W25QXX_Write_Page(pBuffer, WriteAddr, PageRemain);
+        W25QXX_Write_Page(WriteAddr, pBuffer, PageRemain);
         if(NumByteToWrite == PageRemain)  //写入完成
             break;
         else  //NumByteToWrite > PageRemain
@@ -186,11 +186,11 @@ void W25QXX_Write_NoCheck(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByte
 /**
  * @brief 写入W25QXX，在指定地址开始写入指定长度的数据
  * 
- * @param pBuffer 数据存储区
  * @param WriteAddr 开始写入的地址(12bit)
+ * @param pBuffer 数据存储区
  * @param NumByteToWrite 要写入的字节数(Max=65535)
  */
-void W25QXX_Write(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
+void W25QXX_Write(uint32_t WriteAddr, uint8_t* pBuffer, uint16_t NumByteToWrite)
 {
     uint32_t SectorPosition = 0;
     uint16_t SectorOffset = 0;
@@ -205,7 +205,7 @@ void W25QXX_Write(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
         SectorRemain = NumByteToWrite;
     while(1)
     {
-        W25QXX_Read(W25QXX_Buf, SectorPosition*4096, 4096);  //读出整个扇区的内容
+        W25QXX_Read(SectorPosition*4096, W25QXX_Buf, 4096);  //读出整个扇区的内容
         for(nCount=0; nCount<SectorRemain; nCount++)  //校验数据
             if(W25QXX_Buf[SectorOffset+nCount] != 0xFF)  //需要擦除
                 break;
@@ -214,10 +214,10 @@ void W25QXX_Write(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
             W25QXX_Erase_Sector(SectorPosition);  //擦除整个扇区
             for(nCount=0; nCount<SectorRemain; nCount++)  //复制
                 W25QXX_Buf[nCount+SectorOffset] = pBuffer[nCount];
-            W25QXX_Write_NoCheck(W25QXX_Buf, SectorPosition*4096, 4096);  //写入整个扇区
+            W25QXX_Write_NoCheck(SectorPosition*4096, W25QXX_Buf, 4096);  //写入整个扇区
         }
         else  //写入已经擦除了的扇区，直接写入扇区剩余空间
-            W25QXX_Write_NoCheck(pBuffer, WriteAddr, SectorRemain);
+            W25QXX_Write_NoCheck(WriteAddr, pBuffer, SectorRemain);
         if(NumByteToWrite == SectorRemain)  //写入结束
             break;
         else  //写入未结束
@@ -239,11 +239,11 @@ void W25QXX_Write(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
 /**
  * @brief W25QXX写入页
  * 
- * @param pBuffer 数据存储区
  * @param WriteAddr 写入地址(24bit)
+ * @param pBuffer 数据存储区
  * @param NumByteToWrite 写入字节数(Max=256)
  */
-void W25QXX_Write_Page(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
+void W25QXX_Write_Page(uint32_t WriteAddr, uint8_t* pBuffer, uint16_t NumByteToWrite)
 {
     W25QXX_Write_Enable();
     W25QXX_CS(GPIO_PIN_RESET);
@@ -262,11 +262,11 @@ void W25QXX_Write_Page(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToW
 /**
  * @brief 读取W25QXX，在指定地址开始读取指定长度的数据
  * 
- * @param pBuffer 数据存储区
  * @param ReadAddr 开始读取的地址(24bit)
+ * @param pBuffer 数据存储区
  * @param NumByteToRead 要读取的字节数(Max=65535)
  */
-void W25QXX_Read(uint8_t* pBuffer, uint32_t ReadAddr, uint16_t NumByteToRead)
+void W25QXX_Read(uint32_t ReadAddr, uint8_t* pBuffer, uint16_t NumByteToRead)
 {
     W25QXX_CS(GPIO_PIN_RESET);
     SPI2_ReadWriteByte(W25X_ReadData);  //读取数据指令

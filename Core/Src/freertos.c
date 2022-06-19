@@ -186,6 +186,7 @@ void Start_LED(void const * argument)
 void Start_SEG(void const * argument)
 {
   /* USER CODE BEGIN Start_SEG */
+  F411_SEG(66666666, Point_Position_None);
   /* Infinite loop */
   for(;;)
   {
@@ -204,6 +205,7 @@ void Start_SEG(void const * argument)
 void Start_TEST(void const * argument)
 {
   /* USER CODE BEGIN Start_TEST */
+  F411_Test();
   /* Infinite loop */
   for(;;)
   {

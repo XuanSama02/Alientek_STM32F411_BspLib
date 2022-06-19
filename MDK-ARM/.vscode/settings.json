@@ -13,6 +13,7 @@
         "freertos.h": "c",
         "bsp_i2c.h": "c",
         "bsp_delay_tim.h": "c",
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "bsp_f411.h": "c"
     }
 }
