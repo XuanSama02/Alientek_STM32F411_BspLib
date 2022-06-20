@@ -157,14 +157,17 @@ void F411_TPAD_TIM3_Init(uint32_t ARR, uint16_t PSC)
     htim3.Init.Prescaler = PSC;  //预分频系数
     htim3.Init.CounterMode = TIM_COUNTERMODE_UP;  //向上计数
     htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;  //不分频
-    HAL_TIM_IC_Init(&htim3);
+    if(HAL_TIM_IC_Init(&htim3) != HAL_OK)
+        printf("HAL_TIM_IC_Init Failed\r\n");
 
     htim3_ch4.ICPolarity = TIM_ICPOLARITY_RISING;  //上升沿捕获
     htim3_ch4.ICSelection = TIM_ICSELECTION_DIRECTTI;  //映射到TI1
     htim3_ch4.ICPrescaler = TIM_ICPSC_DIV1;  //不分频
     htim3_ch4.ICFilter = 0;  //不滤波
-    HAL_TIM_IC_ConfigChannel(&htim3, &htim3_ch4, TIM_CHANNEL_4);  //配置TIM3.CH4
-    HAL_TIM_IC_Start(&htim3, TIM_CHANNEL_4);  //开始捕获TIM3.CH4
+    if(HAL_TIM_IC_ConfigChannel(&htim3, &htim3_ch4, TIM_CHANNEL_4) != HAL_OK)  //配置TIM3.CH4
+        printf("HAL_TIM_IC_ConfigChannel Failed\r\n");
+    if(HAL_TIM_IC_Start(&htim3, TIM_CHANNEL_4) != HAL_OK)  //开始捕获TIM3.CH4
+        printf("HAL_TIM_IC_Start Failed\r\n");
 }
 
 /**

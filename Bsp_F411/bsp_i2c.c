@@ -1,116 +1,151 @@
 #include "bsp_i2c.h"
 
 /**
- * @brief 改变SDA线模式
+ * @brief 初始化I2C接口，亦可用于改变I2C模式
  * 
- * @param Mode 目标模式(IN-OUT)
  */
-void SDA_Mode(bool Mode)
+void I2C_Init(I2C_HandleTypeDef *hi2c)
 {
-    if(Mode == IN)  //输入模式
+    //输出模式引脚配置
+    GPIO_InitTypeDef I2C_OUT;
+    I2C_OUT.Mode = GPIO_MODE_OUTPUT_PP;
+    I2C_OUT.Pull = GPIO_NOPULL;
+    I2C_OUT.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    //输入模式引脚配置
+    GPIO_InitTypeDef I2C_IN;
+    I2C_IN.Mode = GPIO_MODE_OUTPUT_OD;
+    I2C_IN.Pull = GPIO_NOPULL;
+    I2C_IN.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    //引脚配置
+    I2C_OUT.Pin = hi2c->Init.I2C_SCL_PIN;
+    I2C_OUT.Pin = hi2c->Init.I2C_SDA_PIN;
+    I2C_IN.Pin = hi2c->Init.I2C_SCL_PIN;
+    I2C_IN.Pin = hi2c->Init.I2C_SDA_PIN;
+    //初始化引脚
+    if(hi2c->I2C_Mode == I2C_MODE_OUT)
     {
-        GPIOB->MODER &= ~(3<<(7*2));
-        GPIOB->MODER |= 0<<(7*2);
+        HAL_GPIO_Init(hi2c->Init.I2C_SCL_PORT, &I2C_OUT);  //初始化I2C_SCL
+        HAL_GPIO_Init(hi2c->Init.I2C_SDA_PORT, &I2C_OUT);  //初始化I2C_SDA
+    }
+    else  //SDA_Mode == IN
+    {
+        HAL_GPIO_Init(hi2c->Init.I2C_SCL_PORT, &I2C_IN);  //初始化I2C_SCL
+        HAL_GPIO_Init(hi2c->Init.I2C_SDA_PORT, &I2C_IN);  //初始化I2C_SDA
+    }
+    //初始化默认拉高引脚
+    if(hi2c->Inited != true)
+    {
+        hi2c->Inited = true;  //完成初始化
+        HAL_GPIO_WritePin(hi2c->Init.I2C_SCL_PORT, hi2c->Init.I2C_SCL_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(hi2c->Init.I2C_SDA_PORT, hi2c->Init.I2C_SDA_PIN, GPIO_PIN_SET);
+    }
+}
+
+/**
+ * @brief 改变I2C模式
+ * 
+ * @param hi2c I2C句柄
+ * @param I2C_Mode 模式
+ */
+void I2C_Mode(I2C_HandleTypeDef *hi2c, bool I2C_Mode)
+{
+    if(I2C_Mode == I2C_MODE_IN)  //输入模式
+    {
+        hi2c->I2C_Mode = I2C_MODE_IN;
+        I2C_Init(hi2c);
     }
     else  //输出模式
     {
-        GPIOB->MODER &= ~(3<<(7*2));
-        GPIOB->MODER |= 1<<(7*2);
+        hi2c->I2C_Mode = I2C_MODE_OUT;
+        I2C_Init(hi2c);
     }
 }
 
 /**
- * @brief 写入SCL线
+ * @brief I2C总线写入引脚状态
  * 
- * @param Status SCL引脚状态
+ * @param hi2c I2C句柄
+ * @param I2C_PIN I2C引脚
+ * @param Status I2C引脚状态
  */
-void I2C_SCL_Write(GPIO_PinState Status)
+void I2C_Write(I2C_HandleTypeDef *hi2c, bool I2C_PIN, GPIO_PinState Status)
 {
-    HAL_GPIO_WritePin(I2C_SCL_GPIO_Port, I2C_SCL_Pin, Status);
+    if(I2C_PIN == I2C_PIN_SCL)
+        HAL_GPIO_WritePin(hi2c->Init.I2C_SCL_PORT, hi2c->Init.I2C_SCL_PIN, Status);
+    else
+        HAL_GPIO_WritePin(hi2c->Init.I2C_SDA_PORT, hi2c->Init.I2C_SDA_PIN, Status);
 }
 
 /**
- * @brief 写入SDA线
+ * @brief I2C总线读取引脚状态
  * 
- * @param Status SDA引脚状态
+ * @param hi2c I2C句柄
+ * @param I2C_PIN I2C引脚
+ * @return GPIO_PinState I2C引脚状态
  */
-void I2C_SDA_Write(GPIO_PinState Status)
+GPIO_PinState I2C_Read(I2C_HandleTypeDef *hi2c, bool I2C_PIN)
 {
-    HAL_GPIO_WritePin(I2C_SDA_GPIO_Port, I2C_SDA_Pin, Status);
-}
-
-/**
- * @brief 读取SCL线状态
- * 
- * @return GPIO_PinState SCL引脚状态
- */
-GPIO_PinState I2C_SCL_Read(void)
-{
-    return HAL_GPIO_ReadPin(I2C_SCL_GPIO_Port, I2C_SCL_Pin);
-}
-
-/**
- * @brief 读取SDA线状态
- * 
- * @return GPIO_PinState SDA引脚状态
- */
-GPIO_PinState I2C_SDA_Read(void)
-{
-    return HAL_GPIO_ReadPin(I2C_SDA_GPIO_Port, I2C_SDA_Pin);
+    if(I2C_PIN == I2C_PIN_SCL)
+        return HAL_GPIO_ReadPin(hi2c->Init.I2C_SCL_PORT, hi2c->Init.I2C_SCL_PIN);
+    else
+        return HAL_GPIO_ReadPin(hi2c->Init.I2C_SDA_PORT, hi2c->Init.I2C_SDA_PIN);
 }
 
 /**
  * @brief 产生I2C开始信号
  * 
+ * @param hi2c I2C句柄
  */
-void I2C_Start(void)
+void I2C_Start(I2C_HandleTypeDef *hi2c)
 {
-    SDA_Mode(OUT);  //SDA线输出模式
-    I2C_SDA_Write(GPIO_PIN_SET);
-    I2C_SCL_Write(GPIO_PIN_SET);
+    I2C_Mode(hi2c, I2C_MODE_OUT);  //SDA线输出模式
+    I2C_Write(hi2c, I2C_PIN_SDA, GPIO_PIN_SET);
+    I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_SET);
     Delay_us(4);
-    I2C_SDA_Write(GPIO_PIN_RESET);  //开始信号(当SCL高电平，SDA下降沿)
+    I2C_Write(hi2c, I2C_PIN_SDA, GPIO_PIN_RESET);  //开始信号(当SCL高电平，SDA下降沿)
     Delay_us(4);
-    I2C_SCL_Write(GPIO_PIN_RESET);  //钳住I2C总线，准备发送/接收数据
+    I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_RESET);  //钳住I2C总线，准备发送/接收数据
 }
 
 /**
  * @brief 产生I2C停止信号
  * 
+ * @param hi2c I2C句柄
  */
-void I2C_Stop(void)
+void I2C_Stop(I2C_HandleTypeDef *hi2c)
 {
-    SDA_Mode(OUT);  //SDA线输出模式
-    I2C_SCL_Write(GPIO_PIN_RESET);
-    I2C_SDA_Write(GPIO_PIN_RESET);  //停止信号(当SCL高电平，SDA上升沿)
+    I2C_Mode(hi2c, I2C_MODE_OUT);  //SDA线输出模式
+    I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_RESET);
+    I2C_Write(hi2c, I2C_PIN_SDA, GPIO_PIN_RESET);  //停止信号(当SCL高电平，SDA上升沿)
     Delay_us(4);
-    I2C_SCL_Write(GPIO_PIN_SET);
-    I2C_SDA_Write(GPIO_PIN_SET);  //发送I2C总线结束信号
+    I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_SET);
+    I2C_Write(hi2c, I2C_PIN_SDA, GPIO_PIN_SET);  //发送I2C总线结束信号
     Delay_us(4);
 }
 
 /**
- * @brief I2C发送1个字节
+ * @brief I2C发送一个字节
  * 
+ * @param hi2c I2C句柄
  * @param TxData 发送的数据
  */
-void I2C_Send_Byte(uint8_t TxData)
+void I2C_Send_Byte(I2C_HandleTypeDef *hi2c, uint8_t TxData)
 {
-    GPIO_PinState SDA_Status;
-    SDA_Mode(OUT);  //SDA输出模式
-    I2C_SCL_Write(GPIO_PIN_RESET);  //拉低SCL开始传输数据
+    GPIO_PinState I2C_PIN_SDA_Status;
+    I2C_Mode(hi2c, I2C_MODE_OUT);  //SDA输出模式
+    I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_RESET);  //拉低SCL开始传输数据
     for(uint8_t nCount=0; nCount<8; nCount++)  //依次发送数据
     {
         if(((TxData&0x80)>>7) == 1)
-            SDA_Status = GPIO_PIN_SET;
+            I2C_PIN_SDA_Status = GPIO_PIN_SET;
         else
-            SDA_Status = GPIO_PIN_RESET;
-        I2C_SDA_Write(SDA_Status);
+            I2C_PIN_SDA_Status = GPIO_PIN_RESET;
+        I2C_Write(hi2c, I2C_PIN_SDA, I2C_PIN_SDA_Status);
         TxData <<= 1;
         Delay_us(2);
-        I2C_SCL_Write(GPIO_PIN_SET);
+        I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_SET);
         Delay_us(2);
-        I2C_SCL_Write(GPIO_PIN_RESET);
+        I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_RESET);
         Delay_us(2);
     }
 }
@@ -118,83 +153,87 @@ void I2C_Send_Byte(uint8_t TxData)
 /**
  * @brief I2C读取1个字节，ACK=1:发送AKC，ACK=0:发送NAck
  * 
+ * @param hi2c I2C句柄
  * @param Ack 是否发送Ack
  * @return uint8_t 读取的数据
  */
-uint8_t I2C_Read_Byte(unsigned char Ack)
+uint8_t I2C_Read_Byte(I2C_HandleTypeDef *hi2c, unsigned char Ack)
 {
     unsigned char RxData = 0;
-    SDA_Mode(IN);  //SDA输入模式
+    I2C_Mode(hi2c, I2C_MODE_IN);  //SDA输入模式
     for(uint8_t nCount=0; nCount<8; nCount++)
     {
-        I2C_SCL_Write(GPIO_PIN_RESET);
+        I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_RESET);
         Delay_us(2);
-        I2C_SCL_Write(GPIO_PIN_SET);
+        I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_SET);
         RxData <<= 1;
-        if(I2C_SDA_Read() == GPIO_PIN_SET)
+        if(I2C_Read(hi2c, I2C_PIN_SDA) == GPIO_PIN_SET)
             RxData++;
         Delay_us(1);
     }
     if(!Ack)
-        I2C_NAck();  //发送NAck
+        I2C_NAck(hi2c);  //发送NAck
     else
-        I2C_Ack();  //发送Ack
+        I2C_Ack(hi2c);  //发送Ack
     return RxData;
 }
 
 /**
  * @brief 等待Ack信号
  * 
+ * @param hi2c I2C句柄
  * @return true 接收成功
  * @return false 接收失败
  */
-bool I2C_Wait_Ack(void)
+bool I2C_Wait_Ack(I2C_HandleTypeDef *hi2c)
 {
     uint8_t ErrorTime = 0;
-    SDA_Mode(IN);  //SDA输入模式
-    I2C_SDA_Write(GPIO_PIN_SET);
+    I2C_Mode(hi2c, I2C_MODE_IN);  //SDA输入模式
+    I2C_Write(hi2c, I2C_PIN_SDA, GPIO_PIN_SET);
     Delay_us(1);
-    I2C_SCL_Write(GPIO_PIN_SET);
+    I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_SET);
     Delay_us(1);
-    while(I2C_SDA_Read() == GPIO_PIN_SET)
+    while(I2C_Read(hi2c, I2C_PIN_SDA) == GPIO_PIN_SET)
     {
         ErrorTime++;
         if(ErrorTime > 250)
         {
-            I2C_Stop();
+            I2C_Stop(hi2c);
             return false;  //接收失败
         }
     }
-    I2C_SCL_Write(GPIO_PIN_RESET);
+    I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_RESET);
     return true;  //接收成功
 }
 
 /**
  * @brief I2C发送Ack信号
  * 
+ * @param hi2c I2C句柄
  */
-void I2C_Ack(void)
+void I2C_Ack(I2C_HandleTypeDef *hi2c)
 {
-    I2C_SCL_Write(GPIO_PIN_RESET);
-    SDA_Mode(OUT);
-    I2C_SDA_Write(GPIO_PIN_RESET);
+    I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_RESET);
+    I2C_Mode(hi2c, I2C_MODE_OUT);
+    I2C_Write(hi2c, I2C_PIN_SDA, GPIO_PIN_RESET);
     Delay_us(2);
-    I2C_SCL_Write(GPIO_PIN_SET);
+    I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_SET);
     Delay_us(2);
-    I2C_SCL_Write(GPIO_PIN_RESET);
+    I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_RESET);
 }
 
 /**
  * @brief I2C发送NAck信号
  * 
+ * @param hi2c I2C句柄
  */
-void I2C_NAck(void)
+void I2C_NAck(I2C_HandleTypeDef *hi2c)
 {
-    I2C_SCL_Write(GPIO_PIN_RESET);
-    SDA_Mode(OUT);
-    I2C_SDA_Write(GPIO_PIN_SET);
+    I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_RESET);
+    I2C_Mode(hi2c, I2C_MODE_OUT);
+    I2C_Write(hi2c, I2C_PIN_SDA, GPIO_PIN_SET);
     Delay_us(2);
-    I2C_SCL_Write(GPIO_PIN_SET);
+    I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_SET);
     Delay_us(2);
-    I2C_SCL_Write(GPIO_PIN_RESET);
+    I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_RESET);
 }
