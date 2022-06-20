@@ -6,7 +6,7 @@
 #include "stdio.h"
 
 /*
-STM32_HAL RTC XuanLib V1.1
+STM32_HAL RTC XuanLib
 2022/06/15
 changelog：
 1.0：实现RTC相关功能

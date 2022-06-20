@@ -7,7 +7,7 @@
 #include "tim.h"
 
 /*
-STM32_HAL TouchPad XuanLib V1.0
+STM32_HAL TouchPad XuanLib
 2022/06/19
 changelog：
 1.0：未能实现板载TouchPad响应(不依赖CubeMX初始化代码)，初始化成功

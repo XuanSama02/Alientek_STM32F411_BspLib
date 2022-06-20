@@ -6,8 +6,8 @@
 #include "bsp_delay_tim.h"
 
 /*
-STM32_HAL I2C XuanLib V1.0
-2022/06/10
+STM32_HAL I2C XuanLib
+2022/06/20
 changelog：
 1.0：实现软件I2C接口(PB7=SDA，PB6=SCL)
 2.0：重构bsp库，使用类似HAL库的语法，实现任意两个GPIO口I2C协议通讯
@@ -19,22 +19,22 @@ changelog：
  */
 typedef struct
 {   
-    GPIO_TypeDef* I2C_SCL_PORT;
-    GPIO_TypeDef* I2C_SDA_PORT;
-    uint16_t I2C_SCL_PIN;
-    uint16_t I2C_SDA_PIN;
+    GPIO_InitTypeDef I2C_GPIO_OUT;
+    GPIO_InitTypeDef I2C_GPIO_IN;
 }I2C_InitTypeDef;
 
 /**
- * @brief 存储I2C配置信息，默认Inited输入false
+ * @brief 存储I2C配置信息，初始化只需要配置引脚的4个参数，不需要配置I2C_Mode和Init
  * 
  */
 typedef struct
 {
-    uint8_t I2C_Number;  //I2C 编号
     bool I2C_Mode;  //SDA线模式
-    bool Inited;  //初始化完成标记
-    I2C_InitTypeDef Init;
+    GPIO_TypeDef* I2C_SCL_PORT;  //SCL端口
+    GPIO_TypeDef* I2C_SDA_PORT;  //SDA端口
+    uint16_t I2C_SCL_PIN;  //SCL引脚
+    uint16_t I2C_SDA_PIN;  //SDA引脚
+    I2C_InitTypeDef Init;  //I2C初始化配置
 }I2C_HandleTypeDef;
 
 //I2C引脚

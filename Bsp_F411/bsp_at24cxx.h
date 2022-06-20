@@ -6,10 +6,11 @@
 #include "bsp_i2c.h"
 
 /*
-STM32_HAL AT24CXX XuanLib V1.0
-2022/06/17
+STM32_HAL AT24CXX XuanLib
+2022/06/20
 changelog：
 1.0：实现AT24CXX的读写
+1.1：重写以适配新I2C库
 */
 
 //AT24CXX ID

@@ -205,6 +205,7 @@ void Start_SEG(void const * argument)
 void Start_TEST(void const * argument)
 {
   /* USER CODE BEGIN Start_TEST */
+  //F411_Test();
   F411_Test();
   /* Infinite loop */
   for(;;)

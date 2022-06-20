@@ -5,7 +5,7 @@
 #include "stdio.h"
 
 /*
-STM32_HAL F411_USART XuanLib V1.0
+STM32_HAL F411_USART XuanLib
 2022/06/17
 changelog：
 1.0：实现F411板载DAP-Link串口使用，注意中文编码

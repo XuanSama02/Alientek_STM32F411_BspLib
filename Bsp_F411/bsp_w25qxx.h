@@ -5,7 +5,7 @@
 #include "spi.h"
 
 /*
-STM32_HAL W25QXX XuanLib V1.0
+STM32_HAL W25QXX XuanLib
 2022/06/17
 changelog：
 1.0：实现SPI Flash：W25Q16的读写

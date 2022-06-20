@@ -1,5 +1,16 @@
 #include "bsp_f411.h"
 
+I2C_HandleTypeDef I2C_Debug = {0};
+
+/**
+ * @brief F411开发板Debug函数
+ * 
+ */
+void F411_Debug(void)
+{
+    ;
+}
+
 /**
  * @brief F411开发板测试一条龙
  * 
@@ -10,7 +21,7 @@ void F411_Test(void)
     printf("F411 Test Starting:\r\n");
     F411_Test_W25Q16();
     F411_Test_AT24C02();
-    F411_Test_TPAD();  //注意此测试为无限循环
+    //F411_Test_TPAD();  //注意此测试为无限循环
 }
 
 /**
@@ -26,6 +37,7 @@ void F411_Test_W25Q16(void)
     printf("F411_TEST: W25Q16\r\n");
     osDelay(1000);
     //初始化硬件
+    W25QXX_Init();
     if((ID==0) || (ID==0xFFFF))
         printf("Read ID Failed!\r\n");
     else
@@ -51,6 +63,7 @@ void F411_Test_AT24C02(void)
     printf("F411_TEST: AT24C02\r\n");
     osDelay(1000);
     //初始化硬件
+    AT24CXX_Init(AT24C02);
     if(!AT24CXX_Check())
         printf("AT24C02 Init Failed!\r\n");
     else

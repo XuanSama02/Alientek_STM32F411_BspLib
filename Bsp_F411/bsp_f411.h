@@ -16,11 +16,15 @@
 #include "bsp_at24cxx.h"
 
 /*
-STM32_HAL F411 XuanLib V1.0
+STM32_HAL F411 XuanLib
 2022/06/19
 changelog：
 1.0：实现F411开发板板载资源测试
 */
+
+//F411开发板Debug函数
+
+void F411_Debug(void);
 
 //F411开发板测试函数
 

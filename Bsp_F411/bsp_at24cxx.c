@@ -2,6 +2,8 @@
 
 uint16_t EEPROM_TYPE = 0;
 
+I2C_HandleTypeDef AT24C02_I2C = {0};
+
 /**
  * @brief 初始化AT24CXX
  * 
@@ -10,6 +12,14 @@ uint16_t EEPROM_TYPE = 0;
 void AT24CXX_Init(uint16_t AT24CXX)
 {
     EEPROM_TYPE = AT24CXX;  //初始化EEPROM_TYPE
+    //开启时钟
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    //初始化I2C
+    AT24C02_I2C.I2C_SCL_PORT = GPIOB;  //SCL = PB6
+    AT24C02_I2C.I2C_SCL_PIN = GPIO_PIN_6;
+    AT24C02_I2C.I2C_SDA_PORT = GPIOB;  //SDA = PB7
+    AT24C02_I2C.I2C_SDA_PIN = GPIO_PIN_7;
+    I2C_Init(&AT24C02_I2C);
 }
 
 /**
@@ -43,23 +53,23 @@ bool AT24CXX_Check(void)
 uint8_t AT24CXX_ReadByte(uint16_t Addr)
 {
     uint8_t Data = 0;
-    I2C_Start();
+    I2C_Start(&AT24C02_I2C);
     if(EEPROM_TYPE > AT24C16)  //容量>16Mbit
     {
-        I2C_Send_Byte(0xA0);  //写命令
-        I2C_Wait_Ack();
-        I2C_Send_Byte(Addr>>8);  //发送高地址
+        I2C_Send_Byte(&AT24C02_I2C, 0xA0);  //写命令
+        I2C_Wait_Ack(&AT24C02_I2C);
+        I2C_Send_Byte(&AT24C02_I2C, Addr>>8);  //发送高地址
     }
     else  //容量<=16Mbit
-        I2C_Send_Byte(0xA0 + ((Addr/256)<<1));
-    I2C_Wait_Ack();
-    I2C_Send_Byte(Addr%256);  //发送低地址
-    I2C_Wait_Ack();
-    I2C_Start();
-    I2C_Send_Byte(0xA1);  //进入接收模式
-    I2C_Wait_Ack();
-    Data = I2C_Read_Byte(0);
-    I2C_Stop();  //停止信号
+        I2C_Send_Byte(&AT24C02_I2C, 0xA0 + ((Addr/256)<<1));
+    I2C_Wait_Ack(&AT24C02_I2C);
+    I2C_Send_Byte(&AT24C02_I2C, Addr%256);  //发送低地址
+    I2C_Wait_Ack(&AT24C02_I2C);
+    I2C_Start(&AT24C02_I2C);
+    I2C_Send_Byte(&AT24C02_I2C, 0xA1);  //进入接收模式
+    I2C_Wait_Ack(&AT24C02_I2C);
+    Data = I2C_Read_Byte(&AT24C02_I2C, 0);
+    I2C_Stop(&AT24C02_I2C);  //停止信号
     return Data;
 }
 
@@ -102,23 +112,23 @@ void AT24CXX_Read(uint16_t Addr, uint8_t* pBuffer, uint16_t NumToRead)
  */
 void AT24CXX_WriteByte(uint16_t Addr, uint8_t Data)
 {
-    I2C_Start();
+    I2C_Start(&AT24C02_I2C);
     if(EEPROM_TYPE > AT24C16)
     {
-        I2C_Send_Byte(0xA0);  //发送写命令
-        I2C_Wait_Ack();
-        I2C_Send_Byte(Addr>>8);  //发送高地址
+        I2C_Send_Byte(&AT24C02_I2C, 0xA0);  //发送写命令
+        I2C_Wait_Ack(&AT24C02_I2C);
+        I2C_Send_Byte(&AT24C02_I2C, Addr>>8);  //发送高地址
     }
     else
     {
-        I2C_Send_Byte(0xA0 + ((Addr/256)<<1));  //发送器件地址
+        I2C_Send_Byte(&AT24C02_I2C, 0xA0 + ((Addr/256)<<1));  //发送器件地址
     }
-    I2C_Wait_Ack();
-    I2C_Send_Byte(Addr%256);  //发送低地址
-    I2C_Wait_Ack();
-    I2C_Send_Byte(Data);  //发送数据
-    I2C_Wait_Ack();
-    I2C_Stop();  //停止信号
+    I2C_Wait_Ack(&AT24C02_I2C);
+    I2C_Send_Byte(&AT24C02_I2C, Addr%256);  //发送低地址
+    I2C_Wait_Ack(&AT24C02_I2C);
+    I2C_Send_Byte(&AT24C02_I2C, Data);  //发送数据
+    I2C_Wait_Ack(&AT24C02_I2C);
+    I2C_Stop(&AT24C02_I2C);  //停止信号
     osDelay(10);
 }
 

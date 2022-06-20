@@ -96,10 +96,6 @@ void Error_Handler(void);
 #define HC595_LCLK_GPIO_Port GPIOB
 #define HC595_SCLK_Pin GPIO_PIN_5
 #define HC595_SCLK_GPIO_Port GPIOB
-#define I2C_SCL_Pin GPIO_PIN_6
-#define I2C_SCL_GPIO_Port GPIOB
-#define I2C_SDA_Pin GPIO_PIN_7
-#define I2C_SDA_GPIO_Port GPIOB
 #define BEEP_Pin GPIO_PIN_8
 #define BEEP_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */

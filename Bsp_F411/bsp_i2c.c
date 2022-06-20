@@ -1,63 +1,50 @@
 #include "bsp_i2c.h"
 
 /**
- * @brief 初始化I2C接口，亦可用于改变I2C模式
+ * @brief 初始化I2C接口，注意需要手动开启GPIO时钟
  * 
  */
 void I2C_Init(I2C_HandleTypeDef *hi2c)
 {
+    hi2c->I2C_Mode = I2C_MODE_OUT;
     //输出模式引脚配置
-    GPIO_InitTypeDef I2C_OUT;
-    I2C_OUT.Mode = GPIO_MODE_OUTPUT_PP;
-    I2C_OUT.Pull = GPIO_NOPULL;
-    I2C_OUT.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    hi2c->Init.I2C_GPIO_OUT.Alternate = 0;  //不复用
+    hi2c->Init.I2C_GPIO_OUT.Mode = GPIO_MODE_OUTPUT_PP;  //推挽输出
+    hi2c->Init.I2C_GPIO_OUT.Pull = GPIO_PULLUP;  //上拉模式
+    hi2c->Init.I2C_GPIO_OUT.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     //输入模式引脚配置
-    GPIO_InitTypeDef I2C_IN;
-    I2C_IN.Mode = GPIO_MODE_OUTPUT_OD;
-    I2C_IN.Pull = GPIO_NOPULL;
-    I2C_IN.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    //引脚配置
-    I2C_OUT.Pin = hi2c->Init.I2C_SCL_PIN;
-    I2C_OUT.Pin = hi2c->Init.I2C_SDA_PIN;
-    I2C_IN.Pin = hi2c->Init.I2C_SCL_PIN;
-    I2C_IN.Pin = hi2c->Init.I2C_SDA_PIN;
-    //初始化引脚
-    if(hi2c->I2C_Mode == I2C_MODE_OUT)
-    {
-        HAL_GPIO_Init(hi2c->Init.I2C_SCL_PORT, &I2C_OUT);  //初始化I2C_SCL
-        HAL_GPIO_Init(hi2c->Init.I2C_SDA_PORT, &I2C_OUT);  //初始化I2C_SDA
-    }
-    else  //SDA_Mode == IN
-    {
-        HAL_GPIO_Init(hi2c->Init.I2C_SCL_PORT, &I2C_IN);  //初始化I2C_SCL
-        HAL_GPIO_Init(hi2c->Init.I2C_SDA_PORT, &I2C_IN);  //初始化I2C_SDA
-    }
+    hi2c->Init.I2C_GPIO_IN.Alternate = 0;  //不复用
+    hi2c->Init.I2C_GPIO_IN.Mode = GPIO_MODE_INPUT;  //输入模式
+    hi2c->Init.I2C_GPIO_IN.Pull = GPIO_PULLUP;  //上拉模式
+    hi2c->Init.I2C_GPIO_IN.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    //初始化引脚(输出模式)
+    hi2c->Init.I2C_GPIO_OUT.Pin = hi2c->I2C_SCL_PIN;
+    HAL_GPIO_Init(hi2c->I2C_SCL_PORT, &(hi2c->Init.I2C_GPIO_OUT));
+    hi2c->Init.I2C_GPIO_OUT.Pin = hi2c->I2C_SDA_PIN;
+    HAL_GPIO_Init(hi2c->I2C_SDA_PORT, &(hi2c->Init.I2C_GPIO_OUT));
     //初始化默认拉高引脚
-    if(hi2c->Inited != true)
-    {
-        hi2c->Inited = true;  //完成初始化
-        HAL_GPIO_WritePin(hi2c->Init.I2C_SCL_PORT, hi2c->Init.I2C_SCL_PIN, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(hi2c->Init.I2C_SDA_PORT, hi2c->Init.I2C_SDA_PIN, GPIO_PIN_SET);
-    }
+    HAL_GPIO_WritePin(hi2c->I2C_SCL_PORT, hi2c->I2C_SCL_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(hi2c->I2C_SDA_PORT, hi2c->I2C_SDA_PIN, GPIO_PIN_SET);
 }
 
 /**
- * @brief 改变I2C模式
+ * @brief 改变I2C_SDA引脚模式
  * 
  * @param hi2c I2C句柄
  * @param I2C_Mode 模式
  */
 void I2C_Mode(I2C_HandleTypeDef *hi2c, bool I2C_Mode)
 {
-    if(I2C_Mode == I2C_MODE_IN)  //输入模式
+    hi2c->I2C_Mode = I2C_Mode;
+    if(hi2c->I2C_Mode == I2C_MODE_OUT)  //输出模式
     {
-        hi2c->I2C_Mode = I2C_MODE_IN;
-        I2C_Init(hi2c);
+        hi2c->Init.I2C_GPIO_OUT.Pin = hi2c->I2C_SDA_PIN;
+        HAL_GPIO_Init(hi2c->I2C_SDA_PORT, &(hi2c->Init.I2C_GPIO_OUT));
     }
-    else  //输出模式
+    else  //hi2c->I2C_Mode == I2C_MODE_IN
     {
-        hi2c->I2C_Mode = I2C_MODE_OUT;
-        I2C_Init(hi2c);
+        hi2c->Init.I2C_GPIO_IN.Pin = hi2c->I2C_SDA_PIN;
+        HAL_GPIO_Init(hi2c->I2C_SDA_PORT, &(hi2c->Init.I2C_GPIO_IN));
     }
 }
 
@@ -71,9 +58,9 @@ void I2C_Mode(I2C_HandleTypeDef *hi2c, bool I2C_Mode)
 void I2C_Write(I2C_HandleTypeDef *hi2c, bool I2C_PIN, GPIO_PinState Status)
 {
     if(I2C_PIN == I2C_PIN_SCL)
-        HAL_GPIO_WritePin(hi2c->Init.I2C_SCL_PORT, hi2c->Init.I2C_SCL_PIN, Status);
+        HAL_GPIO_WritePin(hi2c->I2C_SCL_PORT, hi2c->I2C_SCL_PIN, Status);
     else
-        HAL_GPIO_WritePin(hi2c->Init.I2C_SDA_PORT, hi2c->Init.I2C_SDA_PIN, Status);
+        HAL_GPIO_WritePin(hi2c->I2C_SDA_PORT, hi2c->I2C_SDA_PIN, Status);
 }
 
 /**
@@ -86,9 +73,9 @@ void I2C_Write(I2C_HandleTypeDef *hi2c, bool I2C_PIN, GPIO_PinState Status)
 GPIO_PinState I2C_Read(I2C_HandleTypeDef *hi2c, bool I2C_PIN)
 {
     if(I2C_PIN == I2C_PIN_SCL)
-        return HAL_GPIO_ReadPin(hi2c->Init.I2C_SCL_PORT, hi2c->Init.I2C_SCL_PIN);
+        return HAL_GPIO_ReadPin(hi2c->I2C_SCL_PORT, hi2c->I2C_SCL_PIN);
     else
-        return HAL_GPIO_ReadPin(hi2c->Init.I2C_SDA_PORT, hi2c->Init.I2C_SDA_PIN);
+        return HAL_GPIO_ReadPin(hi2c->I2C_SDA_PORT, hi2c->I2C_SDA_PIN);
 }
 
 /**

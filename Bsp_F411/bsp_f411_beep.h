@@ -5,7 +5,7 @@
 #include "stdbool.h"
 
 /*
-STM32_HAL F411_BEEP XuanLib V1.0
+STM32_HAL F411_BEEP XuanLib
 2022/06/15
 changelog：
 1.0：实现对F411开发板板载蜂鸣器的控制
