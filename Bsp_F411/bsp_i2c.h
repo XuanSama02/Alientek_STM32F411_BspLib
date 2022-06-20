@@ -62,8 +62,9 @@ void I2C_Stop(I2C_HandleTypeDef *hi2c);   //发送I2C停止信号
 void I2C_Send_Byte(I2C_HandleTypeDef *hi2c, uint8_t TxData);        //I2C发送一个字节
 uint8_t I2C_Read_Byte(I2C_HandleTypeDef *hi2c, unsigned char Ack);  //I2C读取一个字节
 bool I2C_Wait_Ack(I2C_HandleTypeDef *hi2c);  //I2C等待Ack信号
-
 void I2C_Ack(I2C_HandleTypeDef *hi2c);   //I2C发送Ack信号
 void I2C_NAck(I2C_HandleTypeDef *hi2c);  //I2C不发送Ack信号
+
+void I2C_Transmit(I2C_HandleTypeDef *hi2c, uint8_t Addr_Dev, uint8_t Addr, uint8_t Data);  //I2C向指定位置发送数据
 
 #endif

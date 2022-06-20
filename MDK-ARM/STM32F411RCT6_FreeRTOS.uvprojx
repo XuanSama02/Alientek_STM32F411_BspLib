@@ -414,6 +414,11 @@
               <FilePath>..\Bsp_F411\bsp_f411_led.c</FilePath>
             </File>
             <File>
+              <FileName>bsp_f411_tpad.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp_F411\bsp_f411_tpad.c</FilePath>
+            </File>
+            <File>
               <FileName>bsp_delay_tim.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Bsp_F411\bsp_delay_tim.c</FilePath>
@@ -439,9 +444,9 @@
               <FilePath>..\Bsp_F411\bsp_at24cxx.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_f411_tpad.c</FileName>
+              <FileName>bsp_oled.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Bsp_F411\bsp_f411_tpad.c</FilePath>
+              <FilePath>..\Bsp_F411\bsp_oled.c</FilePath>
             </File>
           </Files>
         </Group>

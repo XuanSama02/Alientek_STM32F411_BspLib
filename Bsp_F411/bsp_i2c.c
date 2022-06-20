@@ -224,3 +224,23 @@ void I2C_NAck(I2C_HandleTypeDef *hi2c)
     Delay_us(2);
     I2C_Write(hi2c, I2C_PIN_SCL, GPIO_PIN_RESET);
 }
+
+/**
+ * @brief I2C向指定位置发送数据
+ * 
+ * @param hi2c I2C句柄
+ * @param Addr_Dev 设备地址
+ * @param Addr 寄存器地址
+ * @param Data 数据
+ */
+void I2C_Transmit(I2C_HandleTypeDef *hi2c, uint8_t Addr_Dev, uint8_t Addr, uint8_t Data)
+{
+    I2C_Start(hi2c);
+    I2C_Send_Byte(hi2c, Addr_Dev);  //发送设备地址
+    I2C_Wait_Ack(hi2c);
+    I2C_Send_Byte(hi2c, Addr);  //发送寄存器地址
+    I2C_Wait_Ack(hi2c);
+    I2C_Send_Byte(hi2c, Data);  //发送数据
+    I2C_Wait_Ack(hi2c);
+    I2C_Stop(hi2c);
+}

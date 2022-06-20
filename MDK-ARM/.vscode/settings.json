@@ -16,6 +16,8 @@
         "cstdlib": "c",
         "bsp_f411.h": "c",
         "bsp_f411_tpad.h": "c",
-        "cmsis_os.h": "c"
+        "cmsis_os.h": "c",
+        "bsp_oled.h": "c",
+        "oled_i2c.h": "c"
     }
 }

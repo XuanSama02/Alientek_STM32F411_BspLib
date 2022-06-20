@@ -14,6 +14,7 @@
 #include "bsp_f411_tpad.h"
 #include "bsp_w25qxx.h"
 #include "bsp_at24cxx.h"
+#include "bsp_oled.h"
 
 /*
 STM32_HAL F411 XuanLib

@@ -10,7 +10,7 @@ STM32_HAL AT24CXX XuanLib
 2022/06/20
 changelog：
 1.0：实现AT24CXX的读写
-1.1：重写以适配新I2C库
+1.1：重写以适配新I2C库(现在版本未对I2C进行封装)
 */
 
 //AT24CXX ID
