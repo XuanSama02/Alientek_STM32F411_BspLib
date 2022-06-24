@@ -206,11 +206,6 @@ void Start_TEST(void const * argument)
 {
   /* USER CODE BEGIN Start_TEST */
   //F411_Test();
-  OLED_Init(GPIOA, GPIO_PIN_1, GPIOA, GPIO_PIN_3);
-  OLED_Fill(0xFF);
-  OLED_Fill(0x00);
-  OLED_ShowString(0, 20, "Hanris", TextSize_Small);
-  osDelay(2000);
   /* Infinite loop */
   for(;;)
   {

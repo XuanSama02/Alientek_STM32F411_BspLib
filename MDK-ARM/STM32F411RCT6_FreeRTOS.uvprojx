@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F411xE</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../Bsp_F411;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../Bsp_F411;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;..\Bsp_Devices</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -443,10 +443,15 @@
               <FileType>1</FileType>
               <FilePath>..\Bsp_F411\bsp_at24cxx.c</FilePath>
             </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application/User/Bsp_Devices</GroupName>
+          <Files>
             <File>
-              <FileName>bsp_oled.c</FileName>
+              <FileName>bsp_spi_lcd.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Bsp_F411\bsp_oled.c</FilePath>
+              <FilePath>..\Bsp_Devices\bsp_spi_lcd.c</FilePath>
             </File>
           </Files>
         </Group>
